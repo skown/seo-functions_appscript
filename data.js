@@ -9,10 +9,18 @@
  * @return The data results from Google Search Console.
  * @customfunction
  */
+
+/*
+This function returns the number of clicks that a URL received in a given date range.
+*/
+
 function gsc_data(startDate, endDate, url, domain, metric) {
+  // Encode the domain
   const decode = encodeURIComponent(domain);
+  // Create the API URL
   const api = `https://www.googleapis.com/webmasters/v3/sites/${decode}/searchAnalytics/query`;
 
+  // Create the payload
   const payload = {
     startDate: startDate,
     endDate: endDate,
@@ -29,11 +37,13 @@ function gsc_data(startDate, endDate, url, domain, metric) {
     ],
   };
 
+  // Add the authorization header
   const headers = {
     Authorization: "Bearer " + getService().getAccessToken(),
     "Content-Type": "application/json",
   };
 
+  // Set the options
   const options = {
     headers: headers,
     method: "POST",
@@ -41,12 +51,14 @@ function gsc_data(startDate, endDate, url, domain, metric) {
     payload: JSON.stringify(payload),
   };
 
+  // Fetch the data
   const response = UrlFetchApp.fetch(api, options);
-  Logger.log(response);
+
+  // Parse the JSON response
   const content = JSON.parse(response.getContentText());
-  Logger.log(content);
+
+  // Return the results
   const results = content["rows"][0][metric];
-  Logger.log(results);
   return results;
 }
 
